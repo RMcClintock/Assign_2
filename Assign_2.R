@@ -30,9 +30,9 @@ makeCacheMatrix <- function(matx = matrix(),...) {
         matx
     }
     #
-    setsolve <- function(solve) {
-        # This function will set up the function to find the inverse of matx
-        imat <<- solve   #The function solve finds the inverse 
+    setsolve <- function(inverse) {
+        # This function will set (store) the inverse of matx
+        imat <<- inverse   #The function solve finds the inverse 
         
     }
     getsolve <- function() {
@@ -41,8 +41,8 @@ makeCacheMatrix <- function(matx = matrix(),...) {
     }    
     #
     # return with the four functions used to set(store) a matrix,
-    # get(retrieve) the matrix, set(store) the method to calculate the 
-    # inverse of the matrix, and get(retrieve) the inverse of the matrix.
+    # get(retrieve) the matrix, set(store) the inverse of the matrix,   
+    # and get(retrieve) the inverse of the matrix.
     #
     list(setmat = setmat, getmat = getmat,
          setsolve = setsolve, getsolve = getsolve)
@@ -50,11 +50,28 @@ makeCacheMatrix <- function(matx = matrix(),...) {
 }  #  end of makeCacheMatrix
 #
 cacheSolve <- function(matx,...) {
-    # matx is a square matrix that is invertible
+    # matx is an object of type makeCacheMatrix
     #
     # Using the inverse matrix process in makeCacheMatrix, this function
     # will return either compute the inverse of a matrix or retrieve 
     # the inverse if it has already been computed.
     #
+    imat <- matx$getsolve()    #retrieve the inverse of the matrix
+                               #This will either be null (not computed)
+                               #or some value already stored
+    #
+    # If inverse has been computed (imat is not NULL) 
+    # then retrieve the inverse and return its value
+    if(!is.null(imat)) {
+        message("Getting cached inverse")
+        return(imat)
+    }
+    #
+    # Since imat was not computed, we'll do that now
+    #
+    matdata <- matx$getmat()  #retrieve the original matrix
+    imat <- solve(matdata, ...)   #compute the inverse
+    matx$setsolve(imat)    #Set (store) the inverse 
+    imat                   #return the inverse
     
-}
+}  #End of cacheSolve
